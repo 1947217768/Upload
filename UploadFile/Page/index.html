@@ -1,0 +1,105 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <script src="https://unpkg.com/vue@3.2.31/dist/vue.global.js"></script>
+    <script src="https://unpkg.com/axios@0.26.1/dist/axios.min.js"></script>
+</head>
+<body>
+    <div id="app">
+        <input type="file" id="fileExport" @change="handleFileChange" ref="inputer">
+        <button @click="loadfile">开始上传</button>
+        <button @click="load">分片上传</button>
+    </div>
+    <script>
+        var obj = {
+            data() {
+                return {
+                    Title: "上传文件",
+                    file: {},
+                };
+            },
+            methods: {
+                handleFileChange(e) {
+                    let inputDOM = this.$refs.inputer;
+                    this.file = inputDOM.files[0];// 通过DOM取文件数据
+
+                },
+                loadfile() {
+                    let size = Math.floor(this.file.size / 1024);//计算文件的大小　
+                    let formData = new FormData();//new一个formData事件
+                    formData.append("files", this.file); //将file属性添加到formData里
+                    debugger;
+                    fetch("http://localhost:5128/Upload/RuleUploadFile", {
+                        method: 'post',
+                        body: formData,
+                        headers: {
+                            /*"Content-Type": "multipart/form-data;",*/
+                        }
+                    }).then(r => r.json()).then(r => {
+                        console.log(r);
+                    }).catch(e => {
+                        console.log(e);
+                    })
+                },
+                S4() {
+                    return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
+                },
+
+                guid() {
+                    return (this.S4() + this.S4() + "-" + this.S4() + "-" + this.S4() + "-" + this.S4() + "-" + this.S4() + this.S4() + this.S4());
+                },
+                load() {
+                    let size = this.file.size;//文件大小
+
+                    let maxZrea = 8;              //设置每个分区大小 MB
+                    let bufferSize = maxZrea * (1024 * 1024);
+                    let fileStart = 0;
+                    let fileEnd = bufferSize;
+                    let arrFile = [];
+                    while (fileStart < size) {
+                        var fileInfo = {
+                            File: this.file.slice(fileStart, fileEnd),
+                            Start: fileStart,
+                            End: fileEnd
+                        }
+                        arrFile.push(fileInfo);
+                        fileStart = fileEnd;
+                        fileEnd = fileStart + bufferSize;
+                    }
+                    let count = arrFile.length;
+                    let filename = this.file.name + "~" + this.guid();
+                    for (var i = 0; i < count; i++) {
+                        let formData = new FormData();//new一个formData事件
+                        formData.append("file", arrFile[i].File); //将file属性添加到formData里
+                        var url = "http://localhost:5128/Upload/RuleUploadFile?Name=" + filename + "&Number=" + i + "&BufferSize=" + bufferSize + "&Count=" + count + "&Start=" + arrFile[i].Start + "&End=" + arrFile[i].End + "&Size=" + size;
+                        /*var url = "http://192.168.0.166:8080/Upload/RuleUploadFile?Name=" + filename + "&Number=" + i + "&BufferSize=" + bufferSize + "&Count=" + count + "&Start=" + arrFile[i].Start + "&End=" + arrFile[i].End + "&Size=" + size;*/
+                        //fetch(url, {
+                        //    method: 'post',
+                        //    body: formData,
+                        //    headers: {
+                        //        /*"Content-Type": "multipart/form-data;",*/
+                        //    }
+                        //}).then(r => r.json()).then(r => {
+                        //    console.log(r);
+                        //}).catch(e => {
+                        //    console.log(e);
+                        //})
+                        axios.post(url, formData, {
+                            headers: {
+                                "Content-Type": "multipart/form-data;",
+                            }
+                        }).then(r => {
+                            console.log(r);
+                        }).catch(e => {
+                            console.log(e);
+                        });
+                    }
+                }
+            }
+        };
+        var vm = Vue.createApp(obj).mount("#app");
+    </script>
+</body>
+</html>

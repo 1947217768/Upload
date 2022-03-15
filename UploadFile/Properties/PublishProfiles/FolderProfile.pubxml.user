@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+https://go.microsoft.com/fwlink/?LinkID=208121. 
+-->
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <_PublishTargetUrl>E:\Work\Release\Upload</_PublishTargetUrl>
+    <History>True|2022-03-15T01:58:05.9322015Z;True|2022-03-15T09:27:07.1188494+08:00;True|2022-03-15T09:21:06.7429230+08:00;True|2022-03-15T09:12:48.1296183+08:00;True|2022-03-15T09:10:59.1332655+08:00;True|2022-03-15T09:06:55.9078512+08:00;</History>
+  </PropertyGroup>
+</Project>
